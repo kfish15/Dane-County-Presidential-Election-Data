@@ -7,6 +7,14 @@ The goal of this project was to get an idea of voter turnout by city/town/villag
 
 
 ## Sources
-Vote Data: https://www.countyofdane.com/election/results.aspx
+Vote Data: https://www.countyofdane.com/election/results.aspx 
+
 Census Data: https://www.dane-econdev.org/documents/pdf/Population_projection.pdf
+
+## Output
+
+## Problems
+
+## Maintainer/Author
+
 
