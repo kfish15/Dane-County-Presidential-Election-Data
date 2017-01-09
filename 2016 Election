@@ -1,0 +1,88 @@
+from bs4 import BeautifulSoup
+import requests
+from itertools import takewhile
+
+
+url = "https://www.countyofdane.com/election/electiondetail.aspx?id=89"
+response = requests.get(url)
+soup = BeautifulSoup(response.content, "html.parser")
+
+table = soup.find("table", {"id":"gdvPrecinctDetail103"})
+candidates = table.find_all("th", {"scope":"col"})         # COLUMN HEADERS
+
+one_six_candidates = []
+
+for x in candidates:
+    y = x.get_text()
+    one_six_candidates.append(y)
+   
+one_six_candidates = ["Precinct","Donald Trump","Hillary Clinton","Darrell Castle","Gary Johnson","Jill Stein","Monica Moorehead","Rocky Roque De La Fuente","WRITE-IN"]
+
+a = table.find_all("td")
+
+y = 0
+z = 9
+k = len(a) / 9
+master_list = []
+for p in range(k):
+    junk = []
+    for x in a[y:z]:            
+        x = x.get_text()
+        x = x.encode("utf-8")      
+        junk.append(x)
+    master_list.append(junk)
+    y += 9
+    z += 9
+
+
+for x in master_list:
+    s = x[0]
+    if "Wds" in s: 
+        new_s = " ".join(takewhile(lambda x: x != "Wds", s.split(" ")))
+        #print "Wds: " + new_s
+        x[0] = new_s
+    elif "Wd" in s:
+        new_s = " ".join(takewhile(lambda x: x != "Wd", s.split(" ")))
+        #print new_s
+        x[0] = new_s
+    else:
+        pass
+
+
+pretty_list = []
+
+for x in master_list:
+    if x[0] not in pretty_list:
+        pretty_list.append(x[0])
+    else:
+        pass
+    
+final_list = []   
+for x in pretty_list:
+    y = x
+    x = []
+    x.append(y)
+    a = 0
+    for y in range(8):
+        x.append(a)
+    final_list.append(x)
+ 
+for x in master_list:
+    for y in x[-8:]:
+        indx = x.index(y)
+        y = int(y)
+        x[indx] = y
+  
+for x in master_list:
+    for y in final_list:
+        if x[0] == y[0]:
+            z = 1
+            for a in range(8):
+                new = x[z] + y[z]
+                y[z] = new
+                z += 1
+        elif x[0] != y[0]:
+            pass   
+
+
+one_six_final_list = final_list  
