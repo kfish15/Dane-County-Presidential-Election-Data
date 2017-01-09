@@ -1,0 +1,172 @@
+from bs4 import BeautifulSoup
+import requests
+
+url = "https://www.countyofdane.com/clerk/electres/elect2004d.html"
+response = requests.get(url)
+
+zero_four_candidates = ["Precinct","John Kerry","George Bush", "Michael Badnarik", "David Cobb", "Ralph Nader", "James Harris", "Walter Brown", "Write-In"]
+soup = BeautifulSoup(response.content, "html.parser")
+
+
+tables = []
+def func(table):
+    for line in soup.pre.get_text().splitlines()[15:]:
+        
+        if "UNITED STATES SENATOR" in line:
+            return table
+         
+        if "-----" in line:
+            pass
+        else:
+            line = line[5:]
+            line = line.encode("utf-8")
+            table.append(line)
+    
+func(tables)
+
+new_tables = []
+for word in tables:
+    word = word.split()
+    new_tables.append(word)
+
+
+Pull_data = []
+pull_list = []
+pretty_list = []
+for x in new_tables:
+    if "SUN" in x and "PRAIRIE" in x and "C." in x:
+        x[0] = "CITY"
+        x.insert(1,"OF")
+        if x[4] == "1-4":
+            del x[4:8]
+            x.insert(4,"WDS")
+            Pull_data.append(x[:-8])
+        elif x[4] == "WDS":
+            del x[5:8]
+            Pull_data.append(x[:-8])
+        elif x[4] == "21":
+            del x[4:9]
+            x.insert(4,"WDS")
+            Pull_data.append(x[:-8])
+    elif "VILLAGE" in x and "OF" in x and "SHOREWOOD" in x and "HILLS" in x:
+        x.insert(4,"WDS")
+    else:
+        Pull_data.append(x[:-8])
+    
+for x in Pull_data[:-3]:
+    if "WD" in x:
+        indx = x.index("WD")
+        #print "WD: " + str(x[:indx])
+        x = x[:indx]
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            pretty_list.append(x)
+        
+    elif "WDS" in x:
+        indx = x.index("WDS")
+        #print "WDS: " + str(x[:indx])
+        x = x[:indx]
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            pretty_list.append(x)
+        
+    else:
+        #print "None: " + str(x)
+        #print x
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            #print x
+            pretty_list.append(x)
+
+
+master_list = []
+for x in new_tables[:-3]:
+    if "WDS" in x:
+        indx = x.index("WDS")
+    elif "WD" in x:
+        indx = x.index("WD")
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "BLACK" and x[3] == "EARTH":
+        indx = 4
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "DANE":            # Needs to be fixed
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "PERRY":
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "VERMONT":
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "YORK":
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "PRIMROSE":
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "PLEASANT" and x[3] == "SPRINGS":
+        indx = 4
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "DANE":
+        indx = 3
+    elif x[0] == "TOWN" and x[1] == "OF" and x[2] == "BLUE" and x[3] == "MOUNDS":
+        indx = 4
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "ROCKDALE":
+        indx = 3
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "SHOREWOOD" and x[3] == "HILLS":
+        indx = 4
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "COTTAGE" and x[3] == "GROVE":
+        indx = 4
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "CROSS" and x[3] == "PLAINS":
+        indx = 4
+    elif x[0] == "VILLAGE" and x[1] == "OF" and x[2] == "BLUE" and x[3] == "MOUNDS":
+        indx = 4
+    pull_list.append(x)
+    list_title = ' '.join(x[:indx])
+    new_list = []
+    new_list.append(list_title)
+    for y in x[-8:]:
+        new_list.append(int(y))
+    master_list.append(new_list)
+    new_list = []
+   
+final_list = [] 
+
+
+
+for x in pretty_list:
+    if x == "TOWN OF PLEASANT SPRINGS 1-4":
+        y = pretty_list.index(x)
+        pretty_list[y] = "TOWN OF PLEASANT SPRINGS"
+    elif x == "VILLAGE OF COTTAGE GROVE 1-7":
+        y = pretty_list.index(x)
+        pretty_list[y] = "VILLAGE OF COTTAGE GROVE"
+    elif x == "VILLAGE OF CROSS PLAINS 1-4":
+        y = pretty_list.index(x)
+        pretty_list[y] = "VILLAGE OF CROSS PLAINS"
+
+pretty_list.append("VILLAGE OF SHOREWOOD HILLS")
+           
+for x in pretty_list:
+    y = x
+    x = []
+    x.append(y)
+    a = 0
+    for y in range(8):
+        x.append(a)
+    final_list.append(x)
+
+
+for x in master_list:
+    for y in final_list:
+        if x[0] == y[0]:
+            z = 1
+            for a in range(8):
+                new = x[z] + y[z]
+                y[z] = new
+                z += 1
+        elif x[0] != y[0]:
+            pass
+
+zero_four_final_list = final_list
