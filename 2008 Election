@@ -1,0 +1,128 @@
+    
+from bs4 import BeautifulSoup
+import requests
+
+url = "https://www.countyofdane.com/clerk/elect2008d.html"
+response = requests.get(url)
+
+zero_eight_candidates = ["Precinct","Barack Obama","John McCain","Cynthia McKinney","Bob Barr","Brian Moore","Gloria La Riva","Ralph Nader","Chuck Baldwin","Jeffrey Wamboldt","WRITE-IN"]
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+tables = []
+def func(table):
+    for line in soup.pre.get_text().splitlines()[15:]:
+        
+        if "REPRESENTATIVE IN CONGRESS DISTRICT 2" in line:
+            return table
+        
+        
+        if "-----" in line:
+            pass
+        else:
+            line = line[5:]
+            line = line.encode("utf-8")
+            table.append(line)
+    
+func(tables)
+
+new_tables = []
+for word in tables:
+    word = word.split()
+    new_tables.append(word)
+ 
+
+Pull_data = []
+pull_list = []
+pretty_list = []
+for x in new_tables[:-3]:
+    Pull_data.append(x[:-10])
+    
+for x in Pull_data:
+    if "WD" in x:
+        indx = x.index("WD")
+        #print "WD: " + str(x[:indx])
+        x = x[:indx]
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            pretty_list.append(x)
+        
+    elif "WDS" in x:
+        indx = x.index("WDS")
+        #print "WDS: " + str(x[:indx])
+        x = x[:indx]
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            pretty_list.append(x)
+        
+    else:
+        #print "None: " + str(x)
+        #print x
+        pull_list.append(x)
+        x = ' '.join(x)
+        if x in pretty_list:
+            pass
+        else:
+            #print x
+            pretty_list.append(x)
+
+
+master_list = []
+for x in new_tables[:-3]:
+    if "WDS" in x:
+        indx = x.index("WDS")
+    elif "WD" in x:
+        indx = x.index("WD")
+    elif x[0] == "T" and x[1] == "BLACK" and x[2] == "EARTH":
+        indx = 3
+    elif x[0] == "T" and x[1] == "DANE":
+        indx = 2
+    elif x[0] == "T" and x[1] == "PERRY":
+        indx = 2
+    elif x[0] == "T" and x[1] == "VERMONT":
+        indx = 2
+    elif x[0] == "T" and x[1] == "YORK":
+        indx = 2
+    elif x[0] == "V" and x[1] == "DANE":
+        indx = 2
+    elif x[0] == "T" and x[1] == "PRIMROSE":
+        indx = 2
+    pull_list.append(x)
+    list_title = ' '.join(x[:indx])
+    new_list = []
+    new_list.append(list_title)
+    for y in x[-10:]:
+        new_list.append(int(y))
+    master_list.append(new_list)
+    new_list = []
+   
+final_list = [] 
+           
+for x in pretty_list:
+    y = x
+    x = []
+    x.append(y)
+    a = 0
+    for y in range(10):
+        x.append(a)
+    final_list.append(x)
+    
+   
+for x in master_list:
+    for y in final_list:
+        if x[0] == y[0]:
+            z = 1
+            for a in range(10):
+                new = x[z] + y[z]
+                y[z] = new
+                z += 1
+        elif x[0] != y[0]:
+            pass
+
+zero_eight_final_list = final_list
