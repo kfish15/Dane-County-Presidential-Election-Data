@@ -20,8 +20,5 @@ Election results: https://www.countyofdane.com/election/results.aspx
 2000 Census Data for Dane County: https://www.dane-econdev.org/documents/pdf/Population_projection.pdf
 
 
-## Maintainer/Author
-Kody Fisher (<a href="https://twitter.com/kfish_15">@kfish_15</a>)
 
-Would love to hear your comments or tips for improvement!
 
